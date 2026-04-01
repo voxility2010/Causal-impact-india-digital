@@ -4,7 +4,7 @@
 
 ---
 
-## 📌 Overview
+##  Overview
 
 This project applies **heterogeneous treatment effect estimation** to quantify the causal impact of India's telecom infrastructure expansion (Digital India initiative) on three socioeconomic outcomes: literacy rate, employment rate, and GDP per capita — at the state level.
 
@@ -12,7 +12,7 @@ Unlike simple correlation studies, this analysis uses modern **Causal Machine Le
 
 ---
 
-## 🔬 Research Question
+##  Research Question
 
 **Does high telecom penetration under Digital India causally improve literacy, employment, and economic growth — and does the effect vary across Indian states?**
 
@@ -26,7 +26,7 @@ Unlike simple correlation studies, this analysis uses modern **Causal Machine Le
 
 ---
 
-## 🛠️ Methods
+##  Methods
 
 | Method | Purpose |
 |--------|---------|
@@ -38,7 +38,7 @@ Unlike simple correlation studies, this analysis uses modern **Causal Machine Le
 
 ---
 
-## 📦 Datasets
+##  Datasets
 
 | # | Dataset | Source | Role |
 |---|---------|--------|------|
@@ -51,7 +51,7 @@ Unlike simple correlation studies, this analysis uses modern **Causal Machine Le
 
 ---
 
-## 🗂️ Repository Structure
+##  Repository Structure
 
 ```
 causal-impact-digital-india/
@@ -83,7 +83,7 @@ causal-impact-digital-india/
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Run in Google Colab (Recommended)
 
@@ -114,7 +114,7 @@ jupyter notebook causal-impact-digital-india-analysis.ipynb
 
 ---
 
-## 📊 Key Results
+##  Key Results
 
 The notebook produces:
 
@@ -127,7 +127,7 @@ The notebook produces:
 
 ---
 
-## ⚠️ Limitations
+##  Limitations
 
 1. **Observational data** — causal estimates may be affected by unobserved confounders despite using causal ML methods
 2. **Cross-sectional design** — panel data with DiD or synthetic control would be stronger
@@ -139,7 +139,7 @@ The notebook produces:
 
 ---
 
-## 🧰 Tech Stack
+##  Tech Stack
 
 ![Python](https://img.shields.io/badge/Python-3.10-blue)
 ![EconML](https://img.shields.io/badge/EconML-CausalForest-green)
@@ -154,13 +154,13 @@ The notebook produces:
 
 ---
 
-## 📄 License
+##  License
 
 MIT License — free to use, modify, and distribute with attribution.
 
 ---
 
-## 🙋 Author
+##  Author
 
 Built as a causal inference capstone project exploring Digital India's socioeconomic impact using state-of-the-art heterogeneous treatment effect methods.
 
