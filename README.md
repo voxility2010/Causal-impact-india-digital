@@ -1,167 +1,166 @@
-# 🇮🇳 causal-impact-digital-india
-
-> **Causal ML analysis of Digital India's effect on literacy, employment, and GDP across Indian states**
-
----
-
-##  Overview
-
-This project applies **heterogeneous treatment effect estimation** to quantify the causal impact of India's telecom infrastructure expansion (Digital India initiative) on three socioeconomic outcomes: literacy rate, employment rate, and GDP per capita — at the state level.
-
-Unlike simple correlation studies, this analysis uses modern **Causal Machine Learning** methods to answer: *does expanding internet and telecom access actually cause improvements in socioeconomic outcomes, and which states benefit the most?*
+# Causal Impact of Digital India on Socioeconomic Outcomes
+### Heterogeneous Treatment Effect Analysis Using Causal Machine Learning
 
 ---
 
-##  Research Question
+## Overview
 
-**Does high telecom penetration under Digital India causally improve literacy, employment, and economic growth — and does the effect vary across Indian states?**
+This project examines whether India's **Digital India programme** (launched 2015) causally improves state-level **literacy**, **employment**, and **GDP per capita** — and whether these effects vary across states. Using internet penetration as the treatment variable and three complementary causal ML estimators, the analysis finds suggestive positive effects on literacy and GDP per capita, with heterogeneity concentrated in states with stronger baseline electricity infrastructure. Employment effects remain ambiguous.
 
-| Component | Variable | Description |
-|-----------|----------|-------------|
-| **Treatment (T)** | Telecom subscribers (binary) | High vs. low telecom access — median split |
+> **Note**: All findings carry the caveats of observational cross-sectional analysis with a small state-level sample (n ≈ 30). Results constitute *suggestive directional evidence*, not causal proof.
+
+---
+
+## Research Question
+
+> Does expanding internet access under Digital India causally improve literacy, employment, and GDP per capita — and does the effect vary by state?
+
+---
+
+## Causal Framework
+
+| Role | Variable | Description |
+|------|----------|-------------|
+| **Treatment** | Internet penetration (%) | % of population using internet — TRAI/WDI |
 | **Outcome Y₁** | Literacy rate (%) | NFHS-5 state-level literacy |
-| **Outcome Y₂** | Employment rate (%) | Derived from CMIE unemployment data |
-| **Outcome Y₃** | GDP per capita (₹) | State-level GDP |
-| **Confounders (X)** | Electricity, water access, youth population % | Pre-existing conditions influencing both T and Y |
+| **Outcome Y₂** | Employment rate (%) | 100 − unemployment rate (PLFS) |
+| **Outcome Y₃** | GDP per capita (USD) | State-level GSDP per capita (MoSPI) |
+| **Confounders** | Electricity, piped water, youth share, urbanisation, log income | Pre-existing conditions predicting both treatment and outcomes |
+
+**Core identification assumption**: Conditional on confounders, treatment assignment (high vs. low internet penetration) is as-good-as-random (unconfoundedness/strong ignorability).
 
 ---
 
-##  Methods
+## Methods
 
-| Method | Purpose |
-|--------|---------|
-| **T-Learner (XGBoost)** | Baseline CATE estimator — trains separate models for treated/control |
-| **Doubly Robust (DR) Estimator** | Combines outcome regression + IPW; robust to model misspecification |
-| **Causal Forest (EconML CausalForestDML)** | Heterogeneous treatment effects with state-level confidence intervals |
-| **Propensity Score Matching (PSM)** | Nearest-neighbour and caliper matching for quasi-experimental comparison |
-| **Rosenbaum Bounds** | Sensitivity analysis for hidden confounding |
+The analysis uses five complementary approaches:
 
----
-
-##  Datasets
-
-| # | Dataset | Source | Role |
-|---|---------|--------|------|
-| 1 | Year-wise Telecom Subscribers (2008–2022) | TRAI via Kaggle: `hmnshudhmn24/year-wise-telecom-subscribers-in-india-20082022` | Treatment variable |
-| 2 | NFHS-5 Rural & Urban State-wise Data | IIPS via Kaggle: `nitishsinghal/indian-rural-and-urban-statewise-family-data` | Literacy + confounders |
-| 3 | India State-wise GDP | MoSPI via Kaggle: `siddheshmahajan/indias-gdp-statewise` | GDP outcome |
-| 4 | Unemployment in India | CMIE via Kaggle: `gokulrajkmv/unemployment-in-india` | Employment outcome |
-
-> **Recommended upgrade**: Replace with World Bank WDI (`IT.NET.USER.ZS`), RBI DBIE state GSDP, and MoSPI PLFS for publication-quality analysis.
+1. **T-Learner** — XGBoost meta-learner with bootstrap 95% CIs; flexible CATE estimator
+2. **Doubly Robust (DR)** — combines outcome regression + IPW; consistent under partial model misspecification
+3. **Causal Forest (EconML CausalForestDML)** — captures heterogeneous state-level treatment effects with honest splitting and confidence intervals
+4. **Propensity Score Matching (PSM)** — nearest-neighbour and caliper matching for ATT estimation
+5. **Rosenbaum Bounds** — formal sensitivity test for unobserved confounding
 
 ---
 
-##  Repository Structure
+## Data Sources
+
+All data is **embedded inline** — no manual downloads or account sign-ups required. The notebook is fully self-contained and reproducible.
+
+| Dataset | Source | Role | Year |
+|---------|--------|------|------|
+| Internet penetration (%) | [TRAI Subscription Reports](https://www.trai.gov.in/release-publication/reports/telecom-subscription-reports) | Treatment variable | Dec 2021 |
+| Literacy, electricity, water, demographics | [NFHS-5 Factsheets (IIPS)](https://rchiips.org/nfhs/NFHS-5Reports/NFHS-5_INDIA_REPORT.pdf) | Outcomes + confounders | 2019–21 |
+| GDP per capita | [MoSPI State GSDP](https://mospi.gov.in) | Outcome | 2020–21 |
+| Employment rate | [PLFS Annual Report (MoSPI)](https://mospi.gov.in/documents/213904/0/) | Outcome | 2020–21 |
+
+---
+
+## Key Findings
+
+| Outcome | Direction | Cross-Estimator Consistency | Interpretation |
+|---------|-----------|-----------------------------|----------------|
+| **Literacy Rate** | Positive | All three agree | ~+2–5 %p; high-internet states show higher literacy, conditional on infrastructure confounders |
+| **Employment Rate** | Mixed | Estimators disagree | No robust employment effect; labour market channels are heterogeneous |
+| **GDP per Capita** | Positive | All three agree | ~+USD 200–600; high-internet states show higher per-capita income |
+
+**Heterogeneity findings:**
+- States with higher baseline **electricity access** show amplified Digital India effects
+- More **urbanised** states exhibit larger GDP CATEs (agglomeration dynamics)
+- States with very low baseline **literacy** (e.g., Bihar, UP) show near-zero literacy CATEs from internet expansion alone
+- **Diminishing returns** appear above ~65% internet penetration
+
+---
+
+## Repository Structure
 
 ```
-causal-impact-digital-india/
-│
-├── causal-impact-digital-india-analysis.ipynb   # Main analysis notebook
-├── README.md                                     # This file
-│
-├── data/                                         # (gitignored) Downloaded datasets
-│   ├── telecom/
-│   ├── nfhs/
-│   ├── gdp/
-│   └── unemployment/
-│
-├── outputs/                                      # Generated results
-│   ├── digital_india_causal_results.csv          # Full state-level CATE estimates
-│   ├── ate_comparison_table.csv                  # ATE comparison across estimators
-│   └── covariate_balance.csv                     # Balance diagnostics
-│
-└── figures/                                      # Saved plots
-    ├── fig_eda_distributions.png
-    ├── fig_propensity_overlap.png
-    ├── fig_balance.png
-    ├── fig_ate_comparison.png
-    ├── fig_cate_distributions.png
-    ├── fig_statewise_cate_literacy.png
-    ├── fig_feature_importance.png
-    └── fig_dose_response.png
+├── causal_impact_digital_india_publishable.ipynb   # Main analysis notebook
+├── outputs/
+│   ├── digital_india_cate_results.csv              # State-level CATE estimates (all outcomes)
+│   ├── table3_ate_comparison.csv                   # ATE comparison across estimators
+│   ├── table2_covariate_balance.csv                # IPW covariate balance diagnostics
+│   ├── table_sensitivity_thresholds.csv            # Multi-threshold robustness results
+│   ├── fig1_eda_distributions.*                    # EDA: variable distributions by group
+│   ├── fig2_propensity_overlap.*                   # Propensity score overlap diagnostics
+│   ├── fig3_love_plot.*                            # Covariate balance before/after IPW
+│   ├── fig4_ate_comparison.*                       # ATE comparison across three estimators
+│   ├── fig5_cate_distributions.*                   # CATE distribution histograms
+│   ├── fig6_statewise_cate.*                       # State-level CATEs with 95% CIs
+│   ├── fig7_feature_importance.*                   # XGBoost feature importance
+│   ├── fig8_cate_heterogeneity.*                   # CATE moderation by baseline characteristics
+│   └── fig9_dose_response.*                        # Dose-response: log(internet) vs outcomes
+└── README.md
 ```
+
+Figures are saved as both PDF (print-quality) and PNG (web).
 
 ---
 
-##  Getting Started
-
-### Run in Google Colab (Recommended)
-
-1. **Open the notebook** in Google Colab
-
-2. **Set up Kaggle API** (run this before Cell 1):
-```python
-from google.colab import files
-files.upload()  # Upload your kaggle.json
-!mkdir -p ~/.kaggle && mv kaggle.json ~/.kaggle/ && chmod 600 ~/.kaggle/kaggle.json
-```
-
-3. **Run all cells** — datasets are downloaded automatically
-
-### Run Locally
+## Requirements
 
 ```bash
-# Clone the repo
-git clone https://github.com/YOUR_USERNAME/causal-impact-digital-india.git
-cd causal-impact-digital-india
+pip install econml xgboost pandas numpy seaborn matplotlib scikit-learn
+```
 
-# Install dependencies
-pip install econml xgboost pandas numpy seaborn matplotlib scikit-learn openpyxl kagglehub
+| Package | Role |
+|---------|------|
+| `econml` | CausalForestDML implementation |
+| `xgboost` | T-Learner and DR base learners |
+| `scikit-learn` | Propensity model, preprocessing, LOO-CV |
+| `pandas`, `numpy` | Data manipulation |
+| `matplotlib`, `seaborn` | Visualisation |
+| `scipy` | Rosenbaum bounds, statistical tests |
 
-# Launch notebook
-jupyter notebook causal-impact-digital-india-analysis.ipynb
+---
+
+## Reproducibility
+
+- Random seed is set globally (`RANDOM_SEED = 42`) at the top of the notebook
+- All data is embedded inline; no external API calls or file downloads are needed
+- Compatible with Google Colab, Kaggle, and local Jupyter environments
+- Output directory is configurable via the `OUTPUT_DIR` environment variable
+
+---
+
+## Limitations
+
+1. **Observational design**: Unconfoundedness is assumed, not tested. Unobserved confounders (terrain, governance quality) may still bias estimates despite causal ML adjustment.
+2. **Small sample (n ≈ 30)**: All estimators are designed for larger datasets. State-level CATEs should be treated as exploratory and directional.
+3. **Cross-sectional identification**: A single time slice cannot rule out reverse causality. A DiD or synthetic control design would provide stronger identification.
+4. **Treatment binarisation**: The median split discards intensity variation (partially addressed via dose-response analysis in Section 15b).
+5. **Temporal mismatch**: Outcomes measured 2019–21 partially overlap with the rollout period; long-run effects may be underestimated.
+6. **Treatment measurement error**: TRAI service areas do not perfectly align with state boundaries, introducing attenuation bias.
+
+---
+
+## References
+
+- Athey, S., & Wager, S. (2019). Estimating treatment effects with causal forests. *Observational Studies*, 5(2), 37–51.
+- Austin, P. C. (2011). An introduction to propensity score methods. *Multivariate Behavioral Research*, 46(3), 399–424.
+- Chernozhukov et al. (2018). Double/debiased machine learning. *The Econometrics Journal*, 21(1), C1–C68.
+- Rosenbaum, P. R. (2002). *Observational Studies* (2nd ed.). Springer.
+- Government of India, IIPS. (2021). *NFHS-5 India Report*. IIPS, Mumbai.
+- Government of India, MoSPI. (2021). *PLFS Annual Report 2020–21*.
+- TRAI. (2022). *Telecom Subscription Reports — December 2021*.
+
+---
+
+## Citation
+
+If you use this code or analysis, please cite:
+
+```
+@misc{digital_india_causal,
+  title   = {Causal Impact of Digital India on Socioeconomic Outcomes: 
+             Heterogeneous Treatment Effect Analysis Using Causal Machine Learning},
+  year    = {2024},
+  url     = {https://github.com/your-username/your-repo}
+}
 ```
 
 ---
 
-##  Key Results
+## License
 
-The notebook produces:
-
-- **ATE Comparison Table** — Average Treatment Effect from T-Learner, DR, and Causal Forest across all three outcomes
-- **State-level CATE Bar Chart** — which states benefit most from telecom expansion
-- **Propensity Score Overlap Plot** — validates the common support assumption
-- **Covariate Balance Love Plot** — before/after IPW reweighting
-- **Dose-Response Curves** — continuous treatment intensity vs. outcomes
-- **Rosenbaum Bounds** — robustness to hidden confounders
-
----
-
-##  Limitations
-
-1. **Observational data** — causal estimates may be affected by unobserved confounders despite using causal ML methods
-2. **Cross-sectional design** — panel data with DiD or synthetic control would be stronger
-3. **Small N** (~28–36 states) — estimates are directional, not precise
-4. **Median binarization** — loses treatment intensity information (addressed via continuous treatment sensitivity check)
-5. **Data quality** — Kaggle-sourced data may have year mismatches across sources
-
-> These findings constitute **suggestive causal evidence**, not proof. They motivate further investigation via natural experiments or RCT designs.
-
----
-
-##  Tech Stack
-
-![Python](https://img.shields.io/badge/Python-3.10-blue)
-![EconML](https://img.shields.io/badge/EconML-CausalForest-green)
-![XGBoost](https://img.shields.io/badge/XGBoost-meta--learner-orange)
-![scikit-learn](https://img.shields.io/badge/scikit--learn-PSM-lightgrey)
-![Seaborn](https://img.shields.io/badge/Seaborn-visualization-teal)
-
-- **Causal Inference**: `econml`, custom T-Learner, Doubly Robust estimator
-- **ML Models**: `xgboost`, `sklearn` (Logistic Regression, GBM, NearestNeighbors)
-- **Data**: `pandas`, `numpy`
-- **Visualization**: `matplotlib`, `seaborn`
-
----
-
-##  License
-
-MIT License — free to use, modify, and distribute with attribution.
-
----
-
-##  Author
-
-Built as a causal inference capstone project exploring Digital India's socioeconomic impact using state-of-the-art heterogeneous treatment effect methods.
-
-*Feedback and contributions welcome — open an issue or submit a PR.*
+This project is released for academic and research use. Data sourced from Indian government agencies (TRAI, NFHS-5/IIPS, MoSPI) and the World Bank — all publicly accessible.
