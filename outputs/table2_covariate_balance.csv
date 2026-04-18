@@ -1,0 +1,6 @@
+Confounder,SMD (Unadjusted),SMD (IPW-Adjusted),Reduction (%),Balance Status
+Electricity,2.8853,2.7031,6.3,Poor
+PipedWater,2.8498,2.7066,5.0,Poor
+PopBelow15,-2.6288,-2.5602,2.6,Poor
+UrbanShare,1.4552,1.4268,2.0,Poor
+LogGDPpc,2.7028,2.587,4.3,Poor

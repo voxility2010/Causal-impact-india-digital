@@ -1,0 +1,5 @@
+Threshold (Pct),N Treated,N Control,Literacy T-Learner ATE,Employment T-Learner ATE,GDPpc T-Learner ATE
+50,15,15,12.249,2.086,953.668
+60,12,18,9.472,0.053,1414.254
+70,9,21,6.408,1.068,796.283
+75,8,22,5.737,0.744,1086.622
